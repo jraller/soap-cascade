@@ -1,0 +1,30 @@
+{
+  "name": "soap-cascade",
+  "version": "0.0.1",
+  "description": "A minimal node SOAP client modified to work with Cascade Server",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "author": {
+    "name": "Jason Aller"
+  },
+  "dependencies": {
+    "node-expat": ">=1.6.1",
+    "request": ">=2.9.0"
+  },
+  "main": "./index.js",
+  "directories": {
+    "lib": "./lib"
+  },
+  "keywords": [
+    "soap"
+  ],
+  "licenses": [
+    {
+      "type": "MIT License",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "readme": "\r\nThis branch is forked from https://npmjs.org/package/soap-js which was branched from https://github.com/milewise/node-soap. \r\n\r\nInstall:  npm install soap-cascade \r\n\r\nThis branch makes modifications documented in https://github.com/milewise/node-soap/issues/143 that allow the soap-js branch to work with Cascade Server by Hannon Hill.\r\n\r\n\r\n\r\n",
+  "readmeFilename": "Readme.md"
+}
