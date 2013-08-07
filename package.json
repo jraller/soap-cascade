@@ -1,6 +1,6 @@
 {
   "name": "soap-cascade",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A minimal node SOAP client modified to work with Cascade Server",
   "engines": {
     "node": ">=0.10.0"
@@ -19,6 +19,9 @@
   "keywords": [
     "soap"
   ],
+  "scripts": {
+    "test": "mocha -R spec -u exports test/*-test.js"
+  },
   "licenses": [
     {
       "type": "MIT License",
