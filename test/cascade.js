@@ -2,6 +2,8 @@
 
 /*
  * manually run with mocha -R spec -u exports .\test\cascade.js
+ * listSites only checks the simple case, a case with array based will be needed as well
+ * editAccessRights might be a good one to use with testing the aclEntry portion with multiple entries
  */
 
 var soap = require('..'),
