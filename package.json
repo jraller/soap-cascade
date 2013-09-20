@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "node-expat": ">=1.6.1",
-    "request": ">=2.9.0"
+    "request": ">=2.9.0",
   },
   "main": "./index.js",
   "directories": {
@@ -31,7 +31,10 @@
   "readme": "\r\nThis branch is forked from https://npmjs.org/package/soap-js which was branched from https://github.com/milewise/node-soap. \r\n\r\nInstall:  npm install soap-cascade \r\n\r\nThis branch makes modifications documented in https://github.com/milewise/node-soap/issues/143 that allow the soap-js branch to work with Cascade Server by Hannon Hill.\r\n\r\n\r\n\r\n",
   "readmeFilename": "Readme.md",
   "repository": {
-	"type": "git",
-	"url": "https://github.com/jraller/soap-cascade.git"
+    "type": "git",
+    "url": "https://github.com/jraller/soap-cascade.git"
+  },
+  "devDependencies": {
+    "inquirer": "~0.3.3"
   }
 }
