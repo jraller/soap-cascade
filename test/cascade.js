@@ -48,6 +48,7 @@ module.exports = {
 	'input': {
 		'createClient': function (done) {
 			this.timeout(60 * 1000);
+			console.log('');
 			inquirer.prompt(questions, function (answers) {
 				url = answers.serverUrl + ws;
 				argsOrder.authentication.username = answers.username;
@@ -76,7 +77,7 @@ module.exports = {
 				}
 				done();
 			});
-		},
+		}  /*,
 		'listSites with incorrect order': function (done) {
 			this.timeout(5000);
 			client.listSites(argsUnorder, function (err, response) {
@@ -86,6 +87,6 @@ module.exports = {
 				}
 				done();
 			});
-		}
+		} */
 	}
 };
