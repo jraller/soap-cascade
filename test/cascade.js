@@ -61,7 +61,7 @@ module.exports = {
 	},
 	'args order': {
 		'createClient': function (done) {
-			this.timeout(5000);
+			this.timeout(7500);
 			soap.createClient(url, function (err, newClient) {
 				assert.ok(!err);
 				client = newClient;
@@ -69,6 +69,26 @@ module.exports = {
 			});
 		},
 		'listSites with correct order': function (done) {
+			this.timeout(5000);
+			client.listSites(argsOrder, function (err, response) {
+				assert.ok(!err);
+				if (!err) {
+					assert.equal(response.listSitesReturn.success.toString(), 'true');
+				}
+				done();
+			});
+		}/*,
+		'listMessages': function (done) {
+			this.timeout(5000);
+			client.listMessages(argsOrder, function (err, response) {
+				assert.ok(!err);
+				if (!err) {
+					assert.equal(response.listMessagesReturn.success.toString(), 'true');
+				}
+				done();
+			});
+		},
+		'listSites with correct order again': function (done) {
 			this.timeout(5000);
 			client.listSites(argsOrder, function (err, response) {
 				assert.ok(!err);
