@@ -12317,17 +12317,17 @@ function elementNode(element) {
 //	console.log('->', element.type, element.name);
 
 	if (element.type === 'impl') {
-		
+
 		if (schemas.complexTypes[element.name]) {
 //			console.log(util.inspect(schemas.complexTypes[element.name], {depth: null}));
 			if (schemas.complexTypes[element.name].nsName === 'complexType') {
 				if (schemas.complexTypes[element.name].children[0].nsName === 'sequence') {
 					me = {};
-					schemas.complexTypes[element.name].children[0].children.forEach(function(child) {
+					schemas.complexTypes[element.name].children[0].children.forEach(function (child) {
 //						console.log(util.inspect(child, {depth: null}));
 						if (child.nsName === 'choice') {
 //							me[element.name] = {};
-							child.children.forEach(function(grandchild) {
+							child.children.forEach(function (grandchild) {
 //								console.log(util.inspect(grandchild, {depth: null}));
 								which = splitType(grandchild.$type);
 								if (which.name !== 'structured-data-node') {
@@ -12359,11 +12359,11 @@ function elementNode(element) {
 							me = elementNode(which);
 						} else { // extension with base and sequence
 							which = splitType(schemas.complexTypes[element.name].children[0].children[0].$base);
-							me = elementNode(which);							
+							me = elementNode(which);
 							if (schemas.complexTypes[element.name].children[0].children[0].children[0].nsName === 'sequence') {
-								schemas.complexTypes[element.name].children[0].children[0].children[0].children.forEach(function(child) {
+								schemas.complexTypes[element.name].children[0].children[0].children[0].children.forEach(function (child) {
 									if (child.nsName === 'choice') {
-										child.children.forEach(function(grandchild) {
+										child.children.forEach(function (grandchild) {
 											which = splitType(grandchild.$type);
 											me[child.$name] = elementNode(which);
 										});
@@ -12379,12 +12379,11 @@ function elementNode(element) {
 											me[child.$name] = child.$type;
 										}
 									}
-								
 								});
 							} else {
 								me = 'ERROR';
 							}
-						}						
+						}
 					} else {
 						me = 'ERROR';
 					}
@@ -12404,17 +12403,17 @@ function elementNode(element) {
 						}
 					});
 				} else {
-					me = 'ERROR'
+					me = 'ERROR';
 				}
 			} else {
-				me = 'ERROR'
+				me = 'ERROR';
 			}
 		}
 		if (schemas.types[element.name]) {
 //			console.log(util.inspect(schemas.types[element.name], {depth: null}));
 			if (schemas.types[element.name].nsName === 'simpleType') {
 				if (schemas.types[element.name].children[0].nsName === 'restriction') {
-					schemas.types[element.name].children[0].children.forEach(function(child) {
+					schemas.types[element.name].children[0].children.forEach(function (child) {
 						enumeration.push(child.$value);
 					});
 					me = '';
@@ -12437,16 +12436,8 @@ function base(name) {
 		typeList = [],
 		which,
 		pug;
-
 	//starting with the method.$name and going to elements rather than using method.children drill down, for ease of parsing
-
-//	console.log(util.inspect(schemas.elements[name], {depth: null}));
-
-//	console.log(schemas.elements[name].nsName, schemas.elements[name].name);
-//	console.log(schemas.elements[name].children.length, schemas.elements[name].children[0].nsName);
-//	console.log(schemas.elements[name].children[0].children.length, schemas.elements[name].children[0].children[0].nsName);
 	schemas.elements[name].children[0].children[0].children.forEach(function (child) {
-//		typeList.push(child.$minOccurs + ' ' + child.$maxOccurs + ' ' + child.$type + ' ' + child.$nillable);
 		which = splitType(child.$type);
 		if (which.type === 'impl') {
 			me[which.name] = elementNode(which);
@@ -12455,15 +12446,13 @@ function base(name) {
 		} else {
 			me[which.name] = which.type;
 		}
-//		console.log(util.inspect(child, {depth: null}));
 	});
-//	console.log(schemas.elements[name].children[0].children[0].children.length, typeList.join(', '));
-
 	return me;
 }
 
 for (name in schemas.elements) {
 	if (schemas.elements.hasOwnProperty(name) && !name.endsWith('Response')) { //  && name === 'create'
+		console.log('');
 		console.log('### ' + name + ' ###');
 //		trace(name);
 //		console.log(util.inspect(rootElement(name), {depth: null}));
