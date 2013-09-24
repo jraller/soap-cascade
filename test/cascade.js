@@ -46,7 +46,7 @@ var soap = require('..'),
 
 module.exports = {
 	'input': {
-		'createClient': function (done) {
+		'bugUser': function (done) {
 			this.timeout(60 * 1000);
 			console.log('');
 			inquirer.prompt(questions, function (answers) {
