@@ -12646,7 +12646,10 @@ function splitType(name) {
 
 function elementNode(element) {
 	var me = element.name,
-		enumeration = [];
+		enumeration = [],
+		which;
+
+//	console.log('->', element.type, element.name);
 
 	if (element.type === 'impl') {
 		
@@ -12657,9 +12660,77 @@ function elementNode(element) {
 					me = {};
 					schemas.complexTypes[element.name].children[0].children.forEach(function(child) {
 //						console.log(util.inspect(child, {depth: null}));
-						me[child.$name] = child.$type;
+						if (child.nsName === 'choice') {
+							//handle choice by calling elementNode on children
+							me[element.name] = {};
+							child.children.forEach(function(grandchild) {
+								which = splitType(grandchild.$type);
+								if (which.name !== 'structured-data-node') {
+									me[element.name][which.name] = elementNode(which);
+								} else {
+									me[element.name][which.name] = 'recursive';
+								}
+							});
+						} else {
+							which = splitType(child.$type);
+							if (which.type === 'impl') {
+								if (which.name !== 'structured-data-node') {
+									me[child.$name] = elementNode(which);
+								} else {
+									me[child.$name] = 'recursive';
+								}
+							} else {
+								me[child.$name] = child.$type;
+							}
+						}
+
+/*
+						if (child.$type) {
+						} else {
+							console.log('');
+							console.log(util.inspect(child, {depth: null}));
+							console.log('');
+						}
+*/
 					});
+				} else if (schemas.complexTypes[element.name].children[0].nsName === 'complexContent') {
+					if (schemas.complexTypes[element.name].children[0].children[0].nsName === 'extension') {
+						if (schemas.complexTypes[element.name].children[0].children[0].children.length === 0) {
+							which = splitType(schemas.complexTypes[element.name].children[0].children[0].$base);
+							me = elementNode(which);
+						} else {
+							if (schemas.complexTypes[element.name].children[0].children[0].children[0].nsName === 'sequence') {
+								me = {};
+								schemas.complexTypes[element.name].children[0].children[0].children[0].children.forEach(function(child) {
+									if (child.nsName === 'choice') {
+										child.children.forEach(function(grandchild) {
+											which = splitType(grandchild.$type);
+											me[child.$name] = elementNode(which);
+										});
+									} else {
+										which = splitType(child.$type);
+										if (which.type === 'impl') {
+											if (which.name !== 'structured-data-node') {
+												me[child.$name] = elementNode(which);
+											} else {
+												me[child.$name] = 'recursive';
+											}
+										} else {
+											me[child.$name] = child.$type;
+										}
+									}
+								
+								});
+							} else {
+								me = 'ERROR'
+							}
+						}						
+					} else {
+						me = 'ERROR'
+					}
 				}
+			} else {
+				me = 'ERROR'
 			}
 		}
 		if (schemas.types[element.name]) {
@@ -12671,6 +12742,8 @@ function elementNode(element) {
 					});
 					me = enumeration.join(', ');
 				}
+			} else {
+				me = 'ERROR';
 			}
 		}
 	} else if (element.type === 'xsd') {
@@ -12712,7 +12785,7 @@ function base(name) {
 }
 
 for (name in schemas.elements) {
-	if (schemas.elements.hasOwnProperty(name) && !name.endsWith('Response')) {
+	if (schemas.elements.hasOwnProperty(name) && !name.endsWith('Response')) { //  && name === 'create'
 		console.log('### ' + name + ' ###');
 //		trace(name);
 //		console.log(util.inspect(rootElement(name), {depth: null}));
@@ -12723,7 +12796,6 @@ for (name in schemas.elements) {
 
 //	console.log(util.inspect(schemas, {depth: 1}));
 
-
 /*
 console.log('');
 console.log(util.inspect(schema.complexTypes, {depth: 0}));
@@ -12732,52 +12804,4 @@ console.log(util.inspect(schema.types, {depth: 0}));
 */
 
 
-
-/*
-method
-
-var method = {
-	'$name': 'listSites',
-	input: {
-		nsName: 'element',
-		namespace: null,
-		name: 'element',
-		children: [
-			{
-				nsName: 'complexType',
-				namespace: null,
-				name: 'complexType',
-				children: [
-					{
-						nsName: 'sequence',
-						namespace: null,
-						name: 'sequence',
-						children: [
-							{
-								nsName: 'element',
-								namespace: null,
-								name: 'element',
-								children: [],
-								xmlns: {},
-								'$maxOccurs': '1',
-								'$minOccurs': '1',
-								'$name': 'authentication',
-								'$nillable': 'false',
-								'$type': 'impl:authentication'
-							}
-						],
-						xmlns: {}
-					}
-				],
-				xmlns: {}
-			}
-		],
-		xmlns: {},
-		'$name': 'listSites',
-		targetNSAlias: 'impl',
-		targetNamespace: 'http://www.hannonhill.com/ws/ns/AssetOperationService'
-	}
-};
-
-*/
 
