@@ -12288,7 +12288,7 @@ var schemas = { nsName: 'schema',
 	},
 	name,
 	util = require('util');
-	
+
 	/*,
 	methodName = 'read',
 	*/
@@ -12635,28 +12635,85 @@ function build(chapter, name) {
 	return me;
 }*/
 
+function splitType(name) {
+	var nameParts;
+	nameParts = name.split(':');
+	return {
+		type: nameParts[0],
+		name: nameParts[1]
+	};
+}
+
+function elementNode(element) {
+	var me = element.name,
+		enumeration = [];
+
+	if (element.type === 'impl') {
+		
+		if (schemas.complexTypes[element.name]) {
+//			console.log(util.inspect(schemas.complexTypes[element.name], {depth: null}));
+			if (schemas.complexTypes[element.name].nsName === 'complexType') {
+				if (schemas.complexTypes[element.name].children[0].nsName === 'sequence') {
+					me = {};
+					schemas.complexTypes[element.name].children[0].children.forEach(function(child) {
+//						console.log(util.inspect(child, {depth: null}));
+						me[child.$name] = child.$type;
+					});
+				}
+			}
+		}
+		if (schemas.types[element.name]) {
+//			console.log(util.inspect(schemas.types[element.name], {depth: null}));
+			if (schemas.types[element.name].nsName === 'simpleType') {
+				if (schemas.types[element.name].children[0].nsName === 'restriction') {
+					schemas.types[element.name].children[0].children.forEach(function(child) {
+						enumeration.push(child.$value);
+					});
+					me = enumeration.join(', ');
+				}
+			}
+		}
+	} else if (element.type === 'xsd') {
+		me = 'ERROR';
+	} else {
+		me = 'ERROR';
+	}
+	return me;
+}
+
 function base(name) {
 	var me = {},
-		typeList = [];
-	
+		typeList = [],
+		which,
+		pug;
+
 	//starting with the method.$name and going to elements rather than using method.children drill down, for ease of parsing
-	
+
 //	console.log(util.inspect(schemas.elements[name], {depth: null}));
 
 //	console.log(schemas.elements[name].nsName, schemas.elements[name].name);
 //	console.log(schemas.elements[name].children.length, schemas.elements[name].children[0].nsName);
 //	console.log(schemas.elements[name].children[0].children.length, schemas.elements[name].children[0].children[0].nsName);
-	schemas.elements[name].children[0].children[0].children.forEach(function(child) {
-		typeList.push(child.$minOccurs + ' ' + child.$maxOccurs + ' ' + child.$type + ' ' + child.$nillable);
+	schemas.elements[name].children[0].children[0].children.forEach(function (child) {
+//		typeList.push(child.$minOccurs + ' ' + child.$maxOccurs + ' ' + child.$type + ' ' + child.$nillable);
+		which = splitType(child.$type);
+		if (which.type === 'impl') {
+			me[which.name] = elementNode(which);
+		} else if (which.type === 'xsd') {
+			me[child.$name] = child.$minOccurs + ' ' + child.$maxOccurs;
+		} else {
+			me[which.name] = which.type;
+		}
+//		console.log(util.inspect(child, {depth: null}));
 	});
-	console.log(schemas.elements[name].children[0].children[0].children.length, typeList.join(', '));
+//	console.log(schemas.elements[name].children[0].children[0].children.length, typeList.join(', '));
 
 	return me;
 }
 
 for (name in schemas.elements) {
 	if (schemas.elements.hasOwnProperty(name) && !name.endsWith('Response')) {
-		console.log('___' + name + ':');
+		console.log('### ' + name + ' ###');
 //		trace(name);
 //		console.log(util.inspect(rootElement(name), {depth: null}));
 //		console.log(util.inspect(build('elements', name), {depth: null}));
