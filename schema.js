@@ -12286,9 +12286,12 @@ var schemas = { nsName: 'schema',
 				targetNamespace: 'http://www.hannonhill.com/ws/ns/AssetOperationService' } },
 	includes: []
 	},
+	name,
+	util = require('util');
+	
+	/*,
 	methodName = 'read',
-	util = require('util'),
-	name;
+	*/
 
 // console.log(util.inspect(schema, {depth: 0}));
 
@@ -12339,7 +12342,7 @@ rootElement
 	xsd
 		/
 */
-
+/*
 function rootElement(name) {
 	var root = [],
 		elements,
@@ -12373,7 +12376,7 @@ function rootElement(name) {
 	});
 
 	return root;
-}
+}*/
 
 /*
 complexType
@@ -12396,7 +12399,7 @@ complexType
 			schema:complexContent/schema:extension
 			schema:choice/schema:element
 */
-
+/*
 function complexType(NS, which, name) {
 	var stub = {},
 		typeParts,
@@ -12435,25 +12438,25 @@ function complexType(NS, which, name) {
 
 	});
 	return stub[which];
-}
+}*/
 
 /*
 extension
 	/wsdl:definitions/wsdl:types/schema:schema/schema:complexType[@name = $base]
 	schema:sequence
 */
-
+/*
 function extention() {
-}
+}*/
 
 /*
 sequence
 	schema:element
 	schema:choice/schema:element
 */
-
+/*
 function sequence() {
-}
+}*/
 
 /*
 element
@@ -12464,7 +12467,7 @@ element
 	xsd
 		handle
 */
-
+/*
 function elementNode(NS, which, name) {
 	var stub = {};
 	if (NS === 'xsd') {
@@ -12474,13 +12477,13 @@ function elementNode(NS, which, name) {
 		//handle impl:structured-data-nodes
 	}
 	return stub;
-}
+}*/
 
 /*
 simpleType
 	for each schema:restriction/schema:enumeration
 */
-
+/*
 function simpleType(which) {
 	var stub = {};
 
@@ -12496,8 +12499,8 @@ function simpleType(which) {
 
 
 	return stub;
-}
-
+}*/
+/*
 function build(chapter, name) {
 
 //	console.log(chapter, name);
@@ -12630,18 +12633,34 @@ function build(chapter, name) {
 
 //	console.log(util.inspect(target, {depth: null}));
 	return me;
+}*/
+
+function base(name) {
+	var me = {},
+		typeList = [];
+	
+	//starting with the method.$name and going to elements rather than using method.children drill down, for ease of parsing
+	
+//	console.log(util.inspect(schemas.elements[name], {depth: null}));
+
+//	console.log(schemas.elements[name].nsName, schemas.elements[name].name);
+//	console.log(schemas.elements[name].children.length, schemas.elements[name].children[0].nsName);
+//	console.log(schemas.elements[name].children[0].children.length, schemas.elements[name].children[0].children[0].nsName);
+	schemas.elements[name].children[0].children[0].children.forEach(function(child) {
+		typeList.push(child.$minOccurs + ' ' + child.$maxOccurs + ' ' + child.$type + ' ' + child.$nillable);
+	});
+	console.log(schemas.elements[name].children[0].children[0].children.length, typeList.join(', '));
+
+	return me;
 }
-
-
-
-
 
 for (name in schemas.elements) {
 	if (schemas.elements.hasOwnProperty(name) && !name.endsWith('Response')) {
 		console.log('___' + name + ':');
 //		trace(name);
 //		console.log(util.inspect(rootElement(name), {depth: null}));
-		console.log(util.inspect(build('elements', name), {depth: null}));
+//		console.log(util.inspect(build('elements', name), {depth: null}));
+		console.log(util.inspect(base(name), {depth: null}));
 	}
 }
 
@@ -12654,3 +12673,54 @@ console.log(util.inspect(schema.complexTypes, {depth: 0}));
 console.log('');
 console.log(util.inspect(schema.types, {depth: 0}));
 */
+
+
+
+/*
+method
+
+var method = {
+	'$name': 'listSites',
+	input: {
+		nsName: 'element',
+		namespace: null,
+		name: 'element',
+		children: [
+			{
+				nsName: 'complexType',
+				namespace: null,
+				name: 'complexType',
+				children: [
+					{
+						nsName: 'sequence',
+						namespace: null,
+						name: 'sequence',
+						children: [
+							{
+								nsName: 'element',
+								namespace: null,
+								name: 'element',
+								children: [],
+								xmlns: {},
+								'$maxOccurs': '1',
+								'$minOccurs': '1',
+								'$name': 'authentication',
+								'$nillable': 'false',
+								'$type': 'impl:authentication'
+							}
+						],
+						xmlns: {}
+					}
+				],
+				xmlns: {}
+			}
+		],
+		xmlns: {},
+		'$name': 'listSites',
+		targetNSAlias: 'impl',
+		targetNamespace: 'http://www.hannonhill.com/ws/ns/AssetOperationService'
+	}
+};
+
+*/
+
