@@ -12314,7 +12314,6 @@ function elementNode(element) {
 	var me = element.name,
 		enumeration = [],
 		which;
-
 //	console.log('->', element.type, element.name);
 
 	if (element.type === 'impl') {
@@ -12327,49 +12326,41 @@ function elementNode(element) {
 					schemas.complexTypes[element.name].children[0].children.forEach(function(child) {
 //						console.log(util.inspect(child, {depth: null}));
 						if (child.nsName === 'choice') {
-							//handle choice by calling elementNode on children
-							
-							//handle workflow correctly
-							
-							me[element.name] = {};
+//							me[element.name] = {};
 							child.children.forEach(function(grandchild) {
+//								console.log(util.inspect(grandchild, {depth: null}));
 								which = splitType(grandchild.$type);
 								if (which.name !== 'structured-data-node') {
-									me[element.name][which.name] = elementNode(which);
+									me[which.name] = elementNode(which);
 								} else {
-									me[element.name][which.name] = 'recursive';
+									me[which.name] = 'structured-data-node';
 								}
 							});
-						} else {
+						} else if (child.nsName === 'element') {
 							which = splitType(child.$type);
 							if (which.type === 'impl') {
 								if (which.name !== 'structured-data-node') {
 									me[child.$name] = elementNode(which);
 								} else {
-									me[child.$name] = 'recursive';
+									me[child.$name] = 'structured-data-node';
 								}
 							} else {
 								me[child.$name] = child.$type;
 							}
-						}
-
-/*
-						if (child.$type) {
 						} else {
-							console.log('');
-							console.log(util.inspect(child, {depth: null}));
-							console.log('');
+							me = 'ERROR';
 						}
-*/
 					});
 				} else if (schemas.complexTypes[element.name].children[0].nsName === 'complexContent') {
 					if (schemas.complexTypes[element.name].children[0].children[0].nsName === 'extension') {
-						if (schemas.complexTypes[element.name].children[0].children[0].children.length === 0) {
+						me = {};
+						if (schemas.complexTypes[element.name].children[0].children[0].children.length === 0) { // extension with base
 							which = splitType(schemas.complexTypes[element.name].children[0].children[0].$base);
 							me = elementNode(which);
-						} else {
+						} else { // extension with base and sequence
+							which = splitType(schemas.complexTypes[element.name].children[0].children[0].$base);
+							me = elementNode(which);							
 							if (schemas.complexTypes[element.name].children[0].children[0].children[0].nsName === 'sequence') {
-								me = {};
 								schemas.complexTypes[element.name].children[0].children[0].children[0].children.forEach(function(child) {
 									if (child.nsName === 'choice') {
 										child.children.forEach(function(grandchild) {
@@ -12382,7 +12373,7 @@ function elementNode(element) {
 											if (which.name !== 'structured-data-node') {
 												me[child.$name] = elementNode(which);
 											} else {
-												me[child.$name] = 'recursive';
+												me[child.$name] = 'structured-data-node';
 											}
 										} else {
 											me[child.$name] = child.$type;
@@ -12391,12 +12382,29 @@ function elementNode(element) {
 								
 								});
 							} else {
-								me = 'ERROR'
+								me = 'ERROR';
 							}
 						}						
 					} else {
-						me = 'ERROR'
+						me = 'ERROR';
 					}
+				} else if (schemas.complexTypes[element.name].children[0].nsName === 'choice') {
+					me = {};
+					schemas.complexTypes[element.name].children[0].children.forEach(function (child) {
+//						console.log(util.inspect(child, {depth: null}));
+						which = splitType(child.$type);
+						if (which.type === 'impl') {
+							if (which.name !== 'structured-data-node') {
+								me[child.$name] = elementNode(which);
+							} else {
+								me[child.$name] = 'structured-data-node';
+							}
+						} else {
+							me[child.$name] = child.$type;
+						}
+					});
+				} else {
+					me = 'ERROR'
 				}
 			} else {
 				me = 'ERROR'
@@ -12409,7 +12417,8 @@ function elementNode(element) {
 					schemas.types[element.name].children[0].children.forEach(function(child) {
 						enumeration.push(child.$value);
 					});
-					me = enumeration.join(', ');
+					me = '';
+//					me = enumeration.join(', ');
 				}
 			} else {
 				me = 'ERROR';
@@ -12442,7 +12451,7 @@ function base(name) {
 		if (which.type === 'impl') {
 			me[which.name] = elementNode(which);
 		} else if (which.type === 'xsd') {
-			me[child.$name] = child.$minOccurs + ' ' + child.$maxOccurs;
+			me[child.$name] = ''; //child.$minOccurs + ' ' + child.$maxOccurs;
 		} else {
 			me[which.name] = which.type;
 		}
