@@ -12340,7 +12340,11 @@ function elementNode(element) {
 							which = splitType(child.$type);
 							if (which.type === 'impl') {
 								if (which.name !== 'structured-data-node') {
-									me[child.$name] = elementNode(which);
+									if (child.$maxOccurs === 'unbounded') {
+										me[child.$name] = [elementNode(which)];
+									} else {
+										me[child.$name] = elementNode(which);
+									}
 								} else {
 									me[child.$name] = 'structured-data-node';
 								}
@@ -12450,16 +12454,114 @@ function base(name) {
 	return me;
 }
 
+function getDescendantProp(obj, desc) {
+    var arr = desc.split(".");
+    while (arr.length) {
+		obj = obj[arr.shift()];
+	}
+    return obj;
+}
+
+function traverse(obj, parent, source) {
+	var me,
+		prop,
+		newParent,
+		value;
+	if (util.isArray(obj)) {
+		me = [];
+		getDescendantProp(arg, parent).forEach(function (child) {
+			var arr = parent.split('.'),
+				stub = {},
+				place = stub,
+				build = {},
+				current = '';
+			while (arr.length) {
+				current = arr.shift();
+				if (arr.length > 0) {
+					build = {};
+				} else {
+					build = child;
+				}
+				place[current] = build;
+				place = place[current];
+			}
+			me.push(traverse(obj[0], '', child));
+		});
+	} else {
+		me = {};
+		for (prop in obj) {
+			if (obj.hasOwnProperty(prop)) {
+				if (parent.length) {
+					newParent = parent + '.' + prop;
+				} else {
+					newParent = prop;
+				}
+				value = getDescendantProp(source, newParent);
+				if (value) {
+					if (typeof obj[prop] === 'object') {
+						me[prop] = traverse(obj[prop], newParent, source);
+					} else {
+						me[prop] = value;
+					}
+				}
+			}
+		}
+	}
+	return me;
+}
+
 for (name in schemas.elements) {
 	if (schemas.elements.hasOwnProperty(name) && !name.endsWith('Response')) { //  && name === 'create'
-		console.log('');
-		console.log('### ' + name + ' ###');
-//		trace(name);
-//		console.log(util.inspect(rootElement(name), {depth: null}));
-//		console.log(util.inspect(build('elements', name), {depth: null}));
-		console.log(util.inspect(base(name), {depth: null}));
+//		console.log('');
+//		console.log('### ' + name + ' ###');
+//		console.log(util.inspect(base(name), {depth: null}));
 	}
 }
+
+var methodName = 'editAccessRights',
+	pattern = base(methodName),
+	arg = {
+		accessRightsInformation: {
+			aclEntries: {
+				aclEntry: [
+					{
+						name: 'n',
+						level: 'l',
+						type: 't'
+					},
+					{
+						name: 'n2',
+						type: 't2',
+						level: 'l2'
+					}
+				]
+			},
+			identifier: {
+				path: {
+					path: 'nath'
+				}
+			}
+		},
+		authentication: {
+			username: 'fred',
+			password: 'secret'
+		}
+	},
+	sortArg,
+	prop;
+
+sortArg = traverse(pattern, '', arg);
+
+console.log('arg:');
+console.log(util.inspect(arg, {depth: null, colors: true}));
+console.log('');
+console.log('pattern:');
+console.log(util.inspect(pattern, {depth: null, colors: true}));
+console.log('');
+console.log('sorted:');
+console.log(util.inspect(sortArg, {depth: null, colors: true}));
+
+
 
 //	console.log(util.inspect(schemas, {depth: null}));
 
