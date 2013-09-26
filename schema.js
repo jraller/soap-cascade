@@ -12469,7 +12469,7 @@ function traverse(obj, parent, source) {
 		value;
 	if (util.isArray(obj)) {
 		me = [];
-		getDescendantProp(arg, parent).forEach(function (child) {
+		getDescendantProp(source, parent).forEach(function (child) {
 			var arr = parent.split('.'),
 				stub = {},
 				place = stub,
@@ -12518,21 +12518,24 @@ for (name in schemas.elements) {
 	}
 }
 
-var methodName = 'editAccessRights',
+var methodName = 'publish',
 	pattern = base(methodName),
 	arg = {
-		accessRightsInformation: {
-			aclEntries: {
-				aclEntry: [
+		publishInformation: {
+			destinations: {
+				assetIdentifier: [
 					{
-						name: 'n',
-						level: 'l',
+						path: {
+							siteName: 'fred',
+							path: 'path1'
+						},
 						type: 't'
 					},
 					{
-						name: 'n2',
-						type: 't2',
-						level: 'l2'
+						path: {
+							path: 'path2'
+						},
+						type: 'o'
 					}
 				]
 			},
