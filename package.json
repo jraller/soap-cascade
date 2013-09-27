@@ -1,6 +1,6 @@
 {
   "name": "soap-cascade",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A minimal node SOAP client modified to work with Cascade Server",
   "engines": {
     "node": ">=0.10.0"
