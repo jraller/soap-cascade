@@ -8,7 +8,7 @@ the soap-js branch to work with Cascade Server by Hannon Hill.
 ## Features
 * [x] propagate namespace in SOAP Envelope
 * [x] correctly encode arrays from JSON arguments
-* [ ] reorder arguments to match WSDL before sending (in progress as new feature 9/23/2013)
+* [x] reorder arguments to match WSDL before sending (added with version 0.1.0 - disable in lib/normalize.js by uncommenting line near end of file)
 
 For examples of use see [Grunt Cascade Examples](https://github.com/jraller/Grunt-Cascade-Examples). This 
 resource also has a [wiki](https://github.com/jraller/Grunt-Cascade-Examples/wiki).
