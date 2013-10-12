@@ -16,5 +16,4 @@ resource also has a [wiki](https://github.com/jraller/Grunt-Cascade-Examples/wik
 To generate JavaScript code from the WSDL see [WSDL to JS](https://github.com/jraller/WSDLtoJS).
 
 version 0.1.1 fixes structured data node issues allowing pages with data definitions to be edited. 
-Also strips out empty arguments before sending -- need to revisit the removal of empty arguments 
-as some need to be removed, but others might be trying to empty a field.
+Also strips out empty arguments before sending.
